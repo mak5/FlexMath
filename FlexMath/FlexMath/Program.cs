@@ -1,4 +1,4 @@
 ﻿using FlexMath.Core;
-
-var result = FlexCalculator.Add(5.2, "three");
+var calculator = new FlexCalculator(new StringToNumberConvertor());
+var result = calculator.Add(5.2, "three hundred");
 Console.WriteLine($"result: {result}");

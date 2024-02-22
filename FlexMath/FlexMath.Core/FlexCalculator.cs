@@ -2,33 +2,26 @@
 {
     public class FlexCalculator
     {
-        static readonly Dictionary<string, int> numberDictionary = new()
-        {
-            {"zero", 0},
-            {"one", 1},
-            {"two", 2},
-            {"three", 3},
-            {"four", 4},
-            {"five", 5},
-            {"six", 6},
-            {"seven", 7},
-            {"eight", 8},
-            {"nine", 9}
-        };
+        private readonly IStringToNumberConvertor _stringToNumberConverter;
 
-        public static double Add(double left, double right)
+        public FlexCalculator(IStringToNumberConvertor stringToNumberConverter)
+        {
+            _stringToNumberConverter = stringToNumberConverter;
+        }
+
+        public double Add(double left, double right)
         {
             return left + right;
         }
 
-        public static double Add(double left, string right)
+        public double Add(double left, string right)
         {
             var parsedRight = ConvertToNumber(right);
 
             return left + parsedRight;
         }
 
-        public static double Add(string left, string right)
+        public double Add(string left, string right)
         {
             var parsedLeft = ConvertToNumber(left);
 
@@ -37,38 +30,56 @@
             return parsedLeft + parsedRight;
         }
 
-        public static double Subtract(double left, double right)
+        public double Subtract(double left, double right)
         {
             return left - right;
         }
 
-        public static double Subtract(double left, string right)
+        public double Subtract(double left, string right)
         {
             var parsedRight = ConvertToNumber(right);
 
             return left - parsedRight;
         }
 
-        public static double Subtract(string left, double right)
+        public double Subtract(string left, double right)
         {
             var parsedLeft = ConvertToNumber(left);
 
             return parsedLeft - right;
         }
 
-        public static double Multiply(double left, double right)
+        public double Subtract(string left, string right)
+        {
+            var parsedLeft = ConvertToNumber(left);
+
+            var parsedRight = ConvertToNumber(right);
+
+            return parsedLeft - parsedRight;
+        }
+
+        public double Multiply(double left, double right)
         {
             return left * right;
         }
 
-        public static double Multiply(double left, string right)
+        public double Multiply(double left, string right)
         {
             var parsedRight = ConvertToNumber(right);
 
             return left * parsedRight;
         }
 
-        public static double Divide(double left, double right)
+        public double Multiply(string left, string right)
+        {
+            var parsedLeft = ConvertToNumber(left);
+
+            var parsedRight = ConvertToNumber(right);
+
+            return parsedLeft * parsedRight;
+        }
+
+        public double Divide(double left, double right)
         {
             if (right == 0)
             {
@@ -78,20 +89,19 @@
             return left / right;
         }
 
-        public static double Divide(double left, string right)
+        public double Divide(double left, string right)
         {
-            if (!int.TryParse(right.ToString(), out int parsedRight))
+            var parsedRight = ConvertToNumber(right);
+
+            if (parsedRight == 0)
             {
-                if (!numberDictionary.TryGetValue(right.ToLower(), out parsedRight))
-                {
-                    throw new ArgumentException("Cannot divide by zero.");
-                }
+                throw new ArgumentException("Cannot divide by zero.");
             }
 
             return left / parsedRight;
         }
 
-        public static double Divide(string left, double right)
+        public double Divide(string left, double right)
         {
             if (right == 0)
             {
@@ -103,14 +113,25 @@
             return parsedLeft / right;
         }
 
-        private static double ConvertToNumber(string value)
+        public double Divide(string left, string right)
+        {
+            var parsedLeft = ConvertToNumber(left);
+
+            var parsedRight = ConvertToNumber(right);
+
+            if (parsedRight == 0)
+            {
+                throw new ArgumentException("Cannot divide by zero.");
+            }
+
+            return parsedLeft / parsedRight;
+        }
+
+        private double ConvertToNumber(string value)
         {
             if (!int.TryParse(value.ToString(), out int parsedValue))
             {
-                if (!numberDictionary.TryGetValue(value.ToLower(), out parsedValue))
-                {
-                    parsedValue = 0;
-                }
+                return _stringToNumberConverter.Convert(value);
             }
 
             return parsedValue;
